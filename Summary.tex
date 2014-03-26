@@ -1,0 +1,168 @@
+\documentclass[11pt]{report}
+\pagestyle{plain}
+\usepackage{graphicx}
+\usepackage{indentfirst}
+\usepackage{float}
+\usepackage[top=2.5cm, left=2.0cm, right=2.0cm, bottom=2.5cm]{geometry}
+\newcommand{\unit}[1]{\ensuremath{\, \mathrm{#1}}}
+%\restylefloat{table}
+%\restylefloat{figure}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+\newcommand{\horline}{\begin{center} \line(1,0){470} \end{center}}
+
+
+\author{Francisco Machado}
+\title{Summary of the Galaxy comparison code}
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+
+The goal of this document is to provide an understanding of the code written to do the comparisons between galaxies.
+I will cover each file and explain how the input is taken and then the workings of the program.
+
+\section{Format\_galaxies.py}
+
+The purpose of this file is to preprocess the simulation galaxy's SED, transforming the data from Luminosity into AB magnitude at a distance of $10 \unit{pc}$.
+
+\subsection{Input}
+
+The input for this program is:
+\begin{verbatim}
+python3 Format_galaxies.py Input_Folder Output_Folder
+\end{verbatim}
+
+The Input\_Folder is the origin place of the files and the Output\_Folder is the directory where the modified files will be stored.
+
+The program runs through every .txt file and runs the appropriate transformations. Right now it assumes that the file consists {\bf only} on two columns, the first one containing the wavelength ($\lambda$) and the other the Luminosity per wavelength ($L_\lambda$) at a distance of $50 \unit{Mpc}$ in SI units ($\unit{W m^{-1}}$).
+
+
+Moreover the code also assumes that when a row is split by the spaces (' ') using the string.split(' ') method from python, the second column corresponds to the FILE\_SECOND\_COLUMN position in the resulting array. Changes in the input file format must be taken into consideration by changing this value.
+
+\subsection{Data processing}
+
+To turn the data into AB magnitudes the program follows the following steps.
+
+Firstly the value of Luminosity per wavelength is transformed to luminosity per frequency ($L_\nu$), using the equation:
+\begin{equation}
+L_\nu = L_\lambda \frac{\lambda^2}{c}
+\end{equation}
+
+This value will have units of $\unit{W Hz^{-1}}$
+
+Then the luminosity is transformed into flux ($F_\nu$) at a radius of $R = 10 \unit{pc}$, by dividing it by the area of a sphere of such radius.
+
+\begin{equation}
+F_\nu = L_\nu \frac{1}{4\pi R^2}
+\end{equation}
+
+$F_\nu$ will now have units of $\unit{W Hz^{-1}m^{-2}}$
+
+Then we make the convertion into flux in microJanksys ($S_\nu$):
+\begin{equation}
+S_\nu = F_\nu \times 10^{32}
+\end{equation}
+
+The units of $S_\nu$ are $\mu\unit{Jy}$.
+
+Then we use the formula to calulate the AB magnitude from the flux in $\mu \unit{Jy}$:
+
+\begin{equation}
+m_{AB} = 23.9 - \log_{10}\left( S_\nu \right)
+\end{equation}
+
+$m_{AB}$ will not have units but determines the apparent AB magnitude of the galaxy.
+
+Since we calculate the flux at a distance of $10 \unit{pc}$ this apparent magnitude matches the absolute magnitude ($M_{AB}$).
+\begin{equation}
+M_{AB} = m_{AB}
+\end{equation}
+
+For the remainder of the article let's define the absolute magnitude of a simulation galaxy as $M_{S}$.
+
+\subsection{Saving the Data}
+
+The code then saves each file into a new file of the same name of the original on the Output\_Folder. Each file consists on two columns separated by a space (' ') where the first column is the wavelength ($\lambda$) and the second will be the absolute AB magnitude for that wavelength ($M_{AB}$).
+
+\horline 
+
+\section{FastComp.py}
+
+This program has compares an input galaxy with a set of galaxies, by their absolute AB magnitude, using the $\chi^2$ minimization method. It returns a file with the value of $\chi^2$ for every galaxy in the comparison set, as well as drawing a graph and histogram with the same information.
+
+\subsection{Input}
+
+The input for this program is:
+\begin{verbatim}
+python3 FastComp.py Input_File Data_Folder
+\end{verbatim}
+
+The Input\_File is a file containing the information about the galaxy we wish to compare with our set. The file must be formated in the following way. The first line must contain a single number which will correspond to the redshift of the galaxy. The remainder of the file must contain 3 columns, which will be the wavelength ($\lambda$), the flux in $\mu \unit{Jy}$ ($S_\nu$), and the error in the flux ($\delta S_\nu$) also in units of $\mu \unit{Jy}$.
+Each of the columns is separated by a space (' ').
+
+\subsection{Data Pre-Processing}
+
+The program starts by reading the information of the file and storing the redshift on the variable called (appropriately) {\bf redshift}. The remaining values are stored on an dictionary of arrays where the 'wl' corresponds to the wavelengths, 'fl', the fluxes and 'err' the error in the flux.
+
+Then the distance in $\unit{Mpc}$ ($D_{Mpc}$) is calculated using the cosmocalc package, using the following command (included to specify the constants):
+\begin{verbatim}
+(cosmocalc.cosmocalc(redshift, H0=70.4, WM=0.2726, WV=0.7274))['DL_Mpc']
+\end{verbatim}
+
+Then the distance is transformed into $\unit{pc}$, (now $D_{pc}$) and used to calculate the distance modulus ($\mu$) which will then be used for calculating the variation in the magnitude of the Input\_File.
+
+\begin{equation}
+\mu = 5 \cdot ( \log_{10}( D_{pc}) - 1)
+\end{equation}
+
+Now for each data point in the Input\_File we tranform the flux ($S_\nu$) into an absolute AB magnitude ($M_{AB}$) (AB magnitude measured at a distance of $10 \unit{pc}$). To do this, the flux is firstly used to calculate the apparent AB magnitude ($m_{AB}$) and then we make use of the modulus distance ($\mu$) to transform from apparent to absolute.
+
+\begin{align}
+m_{AB} &= 23.9 - 2.5 \cdot \log_{10}(S_\nu)\\
+M_{AB} &= m_{AB} - \mu
+\end{align}
+
+The error will also be propagated.
+\begin{align*}
+\delta m_{AB} &= 2.5 \frac{\delta S_\nu}{S_\nu}\\
+\delta M_{AB} &= \delta m_{AB}
+\end{align*}
+
+Here we are assuming that there is no error in the distance since we have no error in the redshift which we can take into account.
+
+For the remainder of the articles let's define the absolute magnitude of an input galaxy as $M_{I}$, and its error as $\delta M_I$.
+
+\subsection{Comparison Method}
+To compare the Input\_File with the set of galaxies we use the $\chi^2$ minimization method by comparing to every galaxy in our set and select the galaxies which present the least value of $\chi^2$.
+
+For this we open and read each file and one at a time calculate the $\chi^2$ term.
+
+If the values of the wavelengths match with the ones we have for the set of galaxies, then we simply calculate the $\chi^2$ term directly:
+\begin{equation}
+\chi^2 = \frac{1}{N}\sum_{k=1}^N \frac{(M_S - M_I)^2}{\delta M_I}
+\end{equation}
+
+If the wavelengths do not match, then we must do an interpolation between the two neighboring points to gather the correct value we should use for $M_S$. 
+
+Let $\lambda_S^+$ and $\lambda_S^-$ be the closest values of the wavelengths to $\lambda_I$ such that $\lambda_S^+ > \lambda_I > \lambda_S^-$.  Also let $M_S^+$ and $M_S^-$ be the values of the absolute magnitude of the simulation galaxy for wavelengths $\lambda_S^+$ and $\lambda_S^-$ respectively.
+
+Then we can define an interpoled value for the absolute magnitude $M_S^{interpol}$ and then do the comparison with that term.
+
+\begin{align}
+M_S^{interpol} &= \frac{M_S^+ - M_S^-}{\lambda_S^+ - \lambda_S^-} (M_I - M_S^-) + M_S^-\\
+\chi^2 &= \frac{1}{N} \sum_{k=1}^N \frac{ (M_S^{interpol} - M_I)^2}{\delta M_I}
+\end{align}
+
+Note, if there are values of wavelengths in the input file greater than the largest wavelength in our simulated galaxys' files or smaller than the smallest one in our simulated galaxys' files, then we have no way of doing a precise comparison with those and they are disregarded.
+
+\subsection{Saving the Data}
+
+The program then saves the resulting $\chi^2$ of all the file comparisons to a file in the Results folder. The program draws a bar graph of this information, with the $\chi^2$ for each galaxy, saving it into the Graphs folder. The program also draws a histogram of the distribution of galaxies with a certain $\chi^2$ value, saving it to the Hist folder.
+
+Finally the program also displays the top 4 best and worst fitting  galaxies in the terminal. This is meant to be a quick and easy way to display the most relevant information so that it can be quickly plotted using the Plot\_mag.py program.
+
+\end{document}

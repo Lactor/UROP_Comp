@@ -1,0 +1,23 @@
+A compilation of stellar population synthesis libraries: resolution_pr_r175
+v1.0 -- Fri Jul 25 18:57:41 2008 -- Ivo Labbe ivo@ociw.edu
+
+BC03, CB07 models with Chabrier or Salpeter IMF; M05 models with Kroupa or Salpeter IMF
+
+Various metallicities ranging from sub-Solar to super-Solar.
+
+Exponentially declining SFH (with timescale ltau [log yr]) were calculated with csp_galaxev from the cb07 distribution (S. Charlot, priv. communication).
+
+Wavelength and age grid are resampled with flux conservation (see resolution_pr_r175.ps)
+
+Wavelength grid 485 steps, resolution:
+FUV     ~ 87
+optical ~ 175
+near-IR ~ 87
+mid-IR  ~ 35
+
+Age grid in 43 steps: 6.0 -- 10.2 in steps of 0.10 dex
+
+SFH Tau [log yr]: 6.5 -- 11.0 in steps of 0.10 dex
+
+Naming convention: [LIBRARY]_[RESOLUTION]_[IMF]_[METALLICITY]_[TAU].ised
+
