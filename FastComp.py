@@ -183,15 +183,13 @@ for file_data in data_files:
 #
 ###################################################################
 
-print(badfiles)
+#print(badfiles)
 
 for k in range(len(input_files_data)):
-    if (k+1) in badfiles:
-        print(k+1)
-        print(input_file_names[k])
-    else:
+    if not (k+1) in badfiles:
         results[k].sort()
-
+        if( results[k][0][0]< 1):
+            print(input_file_names[k])
         output = open("Results/"+str(get_number(input_file_names[k]))+ ".out", "w") 
         #Open file
         
