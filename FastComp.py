@@ -29,7 +29,7 @@ input_files_data = []
 #
 ###################################################################
 
-
+badfiles = []
 for i in range(len(input_file_names)):
 
     data = { 'red': -1, 'wl':[], 'fl':[], 'err':[]} 
@@ -50,7 +50,8 @@ for i in range(len(input_file_names)):
 
             if data['fl'][-1] <= 0:
                 data['fl'][-1] = 1e-4
-                print(i+1)
+                if len(badfiles) == 0 or badfiles[-1] != i+1:
+                    badfiles.append(i+1)
 
     input_files_data.append(data)
         
@@ -182,20 +183,21 @@ for file_data in data_files:
 #
 ###################################################################
 
-
+print(badfiles)
 
 for k in range(len(input_files_data)):
+    if (k+1) in badfiles:
+        print(k+1)
+        print(input_file_names[k])
+    else:
+        results[k].sort()
 
-    results[k].sort()
-
-    output = open("Results/"+str(get_number(input_file_names[k]))+ ".out", "w") 
-    #Open file
-
-    for i in range(len(results[k])):
-        output.write(str(get_number(results[k][i][1])) + " " + str(results[k][i][0])+"\n")
-
-    
-    #Sorts results for graphing
+        output = open("Results/"+str(get_number(input_file_names[k]))+ ".out", "w") 
+        #Open file
+        
+        for i in range(len(results[k])):
+            output.write(str(get_number(results[k][i][1])) + " " + str(results[k][i][0])+"\n")
+            
 
 
 ###################################################################

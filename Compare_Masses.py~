@@ -1,0 +1,14 @@
+import sys
+import glob
+import os
+import math
+import matplotlib.pyplot as plt
+
+if len(sys.argv) != 4:
+    sys.error("WRONG NUMBER OF ARGUMENTS")
+
+results_folder_name = sys.argv[1]
+fout_file_name = sys.argv[2]
+simulation_name = sys.argv[3]
+if output_folder_name[-1] != "/":
+    output_folder_name += "/"
