@@ -72,7 +72,6 @@ for i in range(len(files_names)):
     print("Getting Data from: "+str(files_names[i]))
     data_temp = [[], [], []]
     temp_file = open(files_names[i], 'r')
-    print(files_names[i])
     for line in temp_file:
         values = line.split(' ')
 
@@ -85,7 +84,6 @@ for i in range(len(files_names)):
             if len(values) == 1:
                 redshift = float(values[0])
             if len(values)>=2:
-                print(values)
                 data_temp[0].append(float(values[0])/(1+redshift))
                 data_temp[1].append(calculate_shift(float(values[1]), redshift, dist, modulus_distance))
                 data_temp[2].append( 2.5 * float(values[2])/float(values[1]))
@@ -102,9 +100,9 @@ plt.gca().invert_yaxis()
 for i in range(len(files_data)):
     plot_type = "-"
     if i>=index:
-        plot_type = "o-"
-    if files_data[i][2][0] !=0:
-        plt.errorbar(files_data[i][0], files_data[i][1], yerr = files_data[i][2])
+        plot_type = "-"
+    #if files_data[i][2][0] !=0:
+        #plt.errorbar(files_data[i][0], files_data[i][1], yerr = files_data[i][2])
 
     plt.plot(files_data[i][0], files_data[i][1], plot_type, label=get_number(files_names[i]))
 name = ""
