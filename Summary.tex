@@ -27,7 +27,7 @@ I will cover each file and explain how the input is taken and then the workings 
 
 \section{Format\_galaxies.py}
 
-The purpose of this file is to preprocess the simulation galaxy's SED, transforming the data from Luminosity into AB magnitude at a distance of $10 \unit{pc}$.
+The purpose of this file is to preprocess the simulation galaxy's SED, transforming the data from Luminosity per wavelength into AB magnitude at a distance of $10 \unit{pc}$.
 
 \subsection{Input}
 
@@ -98,13 +98,17 @@ This program has compares an input galaxy with a set of galaxies, by their absol
 
 The input for this program is:
 \begin{verbatim}
-python3 FastComp.py Input_File Data_Folder
+python3 FastComp.py Data_Folder Input_File_1 Input_File_2 ... Input_File_N
 \end{verbatim}
 
-The Input\_File is a file containing the information about the galaxy we wish to compare with our set. The file must be formated in the following way. The first line must contain a single number which will correspond to the redshift of the galaxy. The remainder of the file must contain 3 columns, which will be the wavelength ($\lambda$), the flux in $\mu \unit{Jy}$ ($S_\nu$), and the error in the flux ($\delta S_\nu$) also in units of $\mu \unit{Jy}$.
+The Input\_File\_i is a file containing the information about the galaxy we wish to compare with our set. The file must be formated in the following way. The first line must contain a single number which will correspond to the redshift of the galaxy. The remainder of the file must contain 3 columns, which will be the wavelength ($\lambda$), the flux in $\mu \unit{Jy}$ ($S_\nu$), and the error in the flux ($\delta S_\nu$) also in units of $\mu \unit{Jy}$.
 Each of the columns is separated by a space (' ').
 
+The Data\_Folder is a folder containing the galaxy files from the simulation. These are the galaxies that have been preprocessed by the Format\_galaxies.py script.
+
 \subsection{Data Pre-Processing}
+
+The following description is the procedure followed by the program for all the files.
 
 The program starts by reading the information of the file and storing the redshift on the variable called (appropriately) {\bf redshift}. The remaining values are stored on an dictionary of arrays where the 'wl' corresponds to the wavelengths, 'fl', the fluxes and 'err' the error in the flux.
 
@@ -119,7 +123,7 @@ Then the distance is transformed into $\unit{pc}$, (now $D_{pc}$) and used to ca
 \mu = 5 \cdot ( \log_{10}( D_{pc}) - 1)
 \end{equation}
 
-Now for each data point in the Input\_File we tranform the flux ($S_\nu$) into an absolute AB magnitude ($M_{AB}$) (AB magnitude measured at a distance of $10 \unit{pc}$). To do this, the flux is firstly used to calculate the apparent AB magnitude ($m_{AB}$) and then we make use of the modulus distance ($\mu$) to transform from apparent to absolute.
+Now for each data point in the Input\_File\_i we tranform the flux ($S_\nu$) into an absolute AB magnitude ($M_{AB}$) (AB magnitude measured at a distance of $10 \unit{pc}$). To do this, the flux is firstly used to calculate the apparent AB magnitude ($m_{AB}$) and then we make use of the modulus distance ($\mu$) to tran2sform from apparent to absolute.
 
 \begin{align}
 m_{AB} &= 23.9 - 2.5 \cdot \log_{10}(S_\nu)\\
@@ -137,9 +141,9 @@ Here we are assuming that there is no error in the distance since we have no err
 For the remainder of the articles let's define the absolute magnitude of an input galaxy as $M_{I}$, and its error as $\delta M_I$.
 
 \subsection{Comparison Method}
-To compare the Input\_File with the set of galaxies we use the $\chi^2$ minimization method by comparing to every galaxy in our set and select the galaxies which present the least value of $\chi^2$.
+To compare the Input\_File\_i with the set of galaxies we use the $\chi^2$ minimization method by comparing to every galaxy in our set and select the galaxies which present the least value of $\chi^2$.
 
-For this we open and read each file and one at a time calculate the $\chi^2$ term.
+We then open a simulation galaxy file and for every input file we calculate the $\chi^2$ between the input file and that galaxy file. This way we do not open a simulation galaxy file more than once.
 
 If the values of the wavelengths match with the ones we have for the set of galaxies, then we simply calculate the $\chi^2$ term directly:
 \begin{equation}
@@ -161,8 +165,70 @@ Note, if there are values of wavelengths in the input file greater than the larg
 
 \subsection{Saving the Data}
 
-The program then saves the resulting $\chi^2$ of all the file comparisons to a file in the Results folder. The program draws a bar graph of this information, with the $\chi^2$ for each galaxy, saving it into the Graphs folder. The program also draws a histogram of the distribution of galaxies with a certain $\chi^2$ value, saving it to the Hist folder.
+The program then saves the resulting $\chi^2$ of all the file comparisons to a different file in the Results folder for each input file. Each file is composed of two columns, one is corresponds to a simulated galaxy and the other one is the $\chi^2$ of the comparison of the input file with that simulated galaxy. The values are ordered by the $\chi^2$ for quick reference.
 
-Finally the program also displays the top 4 best and worst fitting  galaxies in the terminal. This is meant to be a quick and easy way to display the most relevant information so that it can be quickly plotted using the Plot\_mag.py program.
+\section{Fits\_to\_File.py}
+
+The goal of this program is to transfrom the .fit from the Gama Survey data set to text files with a formating that is accepted by the FastComp.py program.
+
+\subsection{Input}
+
+The input for this file is:
+\begin{verbatim}
+python3 Fits_to_file.py Input_Folder Output_Folder
+\end{verbatim}
+
+The Input\_Folder is the folder contaning the fit files we wish to process to text files. The Output\_Folder is the folder where the resulting files are saved.
+
+\subsection{Library used}
+
+To access the information I am using the library pyfits which allows for easy acess to a fit file.
+
+\subsection{Data Processing}
+
+First let's list the assumptions on the fit file formating:
+\begin{itemize}
+\item There is only one part in the file, meaning only one header and only one set of data.
+\item The redshift label on the header is 'Z'
+\item The range of the wavelengths is given by the headers 'WMIN' and 'WMAX', in angstroms ($A$).
+\item The wavelengths are uniformly distributed in this range
+\item The first row of data corresponds to the flux in units of $10^{-17}\unit{erg\cdot s^{-1}\cdot cm^{-2} \cdot A^{-1}}$
+\item The second row is the error associated with the flux in the same units.
+\end{itemize}
+
+The file starts by reading the value of the redshift and creating the possible values of the wavelengths, based on the limits in the header.
+
+Then for each possible value of wavelength the program transforms it to SI units (meters) and reads and transforms the flux and error associated with that wave length.
+
+The transformations of the values is done as follows (let $R_\lambda$ be the value of the flux for a wavelength $\lambda$ and $\delta R_\lambda$ its error):
+
+\begin{align*}
+L_\lambda = R_\lambda \cdot 10^{-17} \cdot 10^{10}\\
+\delta L_\lambda = \delta R_\lambda \cdot 10^{-17} \cdot 10^{10}\\
+\end{align*}
+
+This transforms the units from $10^{-17}\unit{erg\cdot s^{-1}\cdot cm^{-2} \cdot A}$ to $\unit{erg\cdot s^{-1}\cdot cm^{-2} \cdot m^{-1}}$
+
+\begin{align*}
+L_\nu = L_\lambda \frac{\lambda^2}{c}\\
+\delta L_\nu = \delta L_\lambda \frac{\lambda^2}{c}\\
+\end{align*}
+
+This transforms flux per wavelength ($\unit{erg\cdot s^{-1}\cdot cm^{-2} \cdot m^{-1}}$) to flux per frequency ($\unit{erg\cdot s^{-1}\cdot cm^{-2} \cdot Hz^{-1}}$)
+
+\begin{align*}
+S_\nu = L_\nu \cdot 10^{29}\
+\delta S_\nu = \delta L_\nu \cdot 10^{29}\\
+\end{align*}
+
+This transforms the value from $\unit{erg\cdot s^{-1}\cdot cm^{-2} \cdot Hz^{-1}}$ to $\mu \unit{Jy}$.
+
+\subsection{Saving data}
+
+The program then for each file, saves a file in the output folder with the same name but .txt extension containing:
+\begin{itemize}
+\item First line containing the redshift of the galaxy
+\item The remainder consists of lines with 3 values separated by a space containing the wavelength of light, the flux of the light in $\unit{\mu Jy}$ and the error of the flux in the same units
+\end{itemize}
 
 \end{document}

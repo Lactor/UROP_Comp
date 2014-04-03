@@ -231,11 +231,11 @@ for k in range(len(input_files_data)):
 # #plt.show()
 
 
-print("Best few")
-for i in range(4):
-    print(str(get_number(results[0][i][1])) + " -> " + str(results[0][i][0])+"\n")
+# print("Best few")
+# for i in range(4):
+#     print(str(get_number(results[0][i][1])) + " -> " + str(results[0][i][0])+"\n")
     
-print("Worse few")
-for i in range(4):
-    print(str(get_number(results[0][-(1+i)][1])) + " -> " + str(results[0][-(i+1)][0])+"\n")
+# print("Worse few")
+# for i in range(4):
+#     print(str(get_number(results[0][-(1+i)][1])) + " -> " + str(results[0][-(i+1)][0])+"\n")
 
