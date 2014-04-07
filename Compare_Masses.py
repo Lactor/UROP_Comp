@@ -28,7 +28,7 @@ if results_folder_name[-1] != "/":
     results_folder_name += "/"
 
 fout_file_name = sys.argv[2]
-simulation_name = sys.argv[3]
+sim_masses_name = sys.argv[3]
 data_folder = sys.argv[4]
 if data_folder[-1] != "/":
     data_folder += "/"
@@ -55,13 +55,13 @@ print(masses_fast)
 
 masses_sim = {}
 
-simulation = open(simulation_name, "r")
+sim_mass_file = open(sim_mass_name, "r")
 
-for line in simulation:
+for line in sim_mass_file:
     values = line.split(" ")
     masses_sim[values[0]] = float(values[1])
 
-simulation.close()
+sim_mass_file.close()
 
 print(masses_sim)
 

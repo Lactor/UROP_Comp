@@ -32,7 +32,7 @@ for j=0,n_phot-1 do begin
         int_sp(j) = trapz(wl_tot,wl_tot*fl_tot*tr_tot) / $
           trapz(wl_tot,wl_tot*tr_tot)
     endif
-endfor
+ endfor
 
 weight   = 1./(eflux*eflux)
 scale_b  = where(int_sp ne 0)

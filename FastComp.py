@@ -116,15 +116,20 @@ data_comp_wl = []
     #only need to keep one wavelength file for all comparison files
 have_wl = False
 
+print_one_file = False
+print_one_data = False
+
 for file_data in data_files:
     #Load comparison file to an array
     #Files have already been changed to be in absolute magnitude
     #From there make the comparisons
-
     #LOAD FILE
+    
+    print(file_data)
+
     data_comp_file = open(file_data, "r")
     data_comp = [] 
-
+    
     for line in data_comp_file:
         values = line.split(' ')
         if not have_wl:
@@ -133,20 +138,20 @@ for file_data in data_files:
             
         data_comp.append( float(values[1]))
     have_wl = True
-    
+        
     #STAR COMPARISON
-    
 
     for k in range(len(input_files_data)):
         
         #For each file do a comparison 
-
+        #print(k, " ", input_file_names[k])
         chi_2 = 0
         index = 0
         int_comp = 0
     
         for i in range(len(input_files_data[k]['wl'])):
-
+            if input_files_data[k]['err'][i] == 0:
+                continue
             while input_files_data[k]['wl'][i] < data_comp_wl[0]: 
                 i+=1                     
                 #we do not have information to calculate these so we skip
@@ -191,7 +196,7 @@ for k in range(len(input_files_data)):
         results[k].sort()
         if( results[k][0][0]< 1):
             print(input_file_names[k])
-        output = open("Results/"+str(get_number(input_file_names[k]))+ ".out", "w") 
+        output = open("Results_GAMA/"+str(get_number(input_file_names[k]))+ ".out", "w") 
         #Open file
         
         for i in range(len(results[k])):
@@ -231,11 +236,11 @@ for k in range(len(input_files_data)):
 # #plt.show()
 
 
-print("Best few")
-for i in range(4):
-    print(str(get_number(results[0][i][1])) + " -> " + str(results[0][i][0])+"\n")
+# print("Best few")
+# for i in range(4):
+#     print(str(get_number(results[0][i][1])) + " -> " + str(results[0][i][0])+"\n")
     
-print("Worse few")
-for i in range(4):
-    print(str(get_number(results[0][-(1+i)][1])) + " -> " + str(results[0][-(i+1)][0])+"\n")
+# print("Worse few")
+# for i in range(4):
+#     print(str(get_number(results[0][-(1+i)][1])) + " -> " + str(results[0][-(i+1)][0])+"\n")
 
