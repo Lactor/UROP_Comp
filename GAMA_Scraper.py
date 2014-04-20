@@ -18,38 +18,11 @@ def isNumber(g):
         return False
 
 
-input_file = open(input_file_name, "r")
-galaxyList = []
-
-#Get the galaxies to scrap
-for line in input_file:
-    if isNumber(line[0]):
-        values = line.split('\t')
-        #print(values[0])
-        galaxyList.append(values[0])
-
-#print(galaxyList)
-
-#Scrap each galaxy
-
-MAIN_URL = 'http://www.gama-survey.org/dr2/tools/sov.php?cataid='
-MASS_URL = 'http://www.gama-survey.org/dr2/tools/querytab.php?tab=StellarMasses&cataid='
-
-galaxyMass = {}
-
-for galaxy in galaxyList:
-    print("Looking at galaxy: " + galaxy)
-    #Get the value of the Mass
-    response = urllib.request.urlopen( MASS_URL + galaxy)
-    html = response.read()
-    
-    #index of reference to stellar mass
-    html = str(html)
-    index = html.find('logmstar')
-
+def find_param( name, html):
+    index = html.find(name)
     nLines = 0
 
-    #gets line of the value of the logmstar
+    #gets line of the value of the param
     while nLines<8:
         if html[index] == '\\' and html[index+1] == 'n':
             nLines+=1
@@ -67,16 +40,62 @@ for galaxy in galaxyList:
     #print(start, " ", index, " : ", html[start:index])
     
     value = float(html[start:index])
+    return value
 
-    galaxyMass[galaxy] = value
-    print(galaxy, " : ", value)
+input_file = open(input_file_name, "r")
+galaxyList = []
+
+#Get the galaxies to scrap
+for line in input_file:
+    if isNumber(line[0]):
+        values = line.split('\t')
+        #print(values[0])
+        galaxyList.append(values[0])
+
+#print(galaxyList)
+
+#Scrap each galaxy
+
+MAIN_URL = 'http://www.gama-survey.org/dr2/tools/sov.php?cataid='
+MASS_URL = 'http://www.gama-survey.org/dr2/tools/querytab.php?tab=StellarMasses&cataid='
+
+massFile = open(output_folder + "masses.txt", "w")
+properties = ['logmstar', 'dellogmstar', 'logage', 'dellogage', 'logtau', 'dellogtau', 'metal', 'delmetal']
+
+
+for galaxy in galaxyList:
+    print("Looking at galaxy: " + galaxy)
+    galaxyProp = {'num': -1, 'logmstar': -1}
+    #Get the value of the Mass
+    response = urllib.request.urlopen( MASS_URL + galaxy)
+    html = response.read()
+    
+    #index of reference to stellar mass
+    html = str(html)
+   
+    #Get information
+    galaxyProp['num'] = galaxy
+    for prop in properties:
+        galaxyProp[prop] = find_param(prop, html)
+    
+    
+
+    #Save information
+    info = str(galaxyProp['num'])
+    for prop in properties:
+        info +=" " + str(galaxyProp[prop])
+    print(info)
+    info = info[0:-1]
+    info += "\n"
+
+    massFile.write(info)
 
     #########
     # Download file
     #########
     
     #only download if not already present
-    if not os.path.isfile(output_folder + galaxy+".fit"):
+    if False and not os.path.isfile(output_folder + galaxy+".fit"):
         response = urllib.request.urlopen(MAIN_URL + galaxy)
         html = str(response.read())
         
@@ -92,14 +111,5 @@ for galaxy in galaxyList:
         urllib.request.urlretrieve(downloadUrl, output_folder + galaxy+".fit")
         print("File Downloaded")
 
-#########
-# Mass File
-#########
-
-print("Printing masses to file: " + output_folder + "masses.txt")
-massFile = open(output_folder + "masses.txt", "w")
-for i in galaxyMass:
-    massFile.write(i + " " + str(galaxyMass[i]) + "\n")
-massFile.close()
 
 print("COMPLETE")

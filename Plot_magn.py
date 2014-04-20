@@ -64,6 +64,7 @@ print(index)
 #
 ###################################################################
 
+C = 1
 
 dist = -1
 modulus_distance = -1
@@ -85,8 +86,8 @@ for i in range(len(files_names)):
                 redshift = float(values[0])
             if len(values)>=2:
                 data_temp[0].append(float(values[0])/(1+redshift))
-                data_temp[1].append(calculate_shift(float(values[1]), redshift, dist, modulus_distance))
-                data_temp[2].append( 2.5 * float(values[2])/float(values[1]))
+                data_temp[1].append(C*calculate_shift(float(values[1]), redshift, dist, modulus_distance))
+                data_temp[2].append( C*2.5 * float(values[2])/float(values[1]))
     
     files_data.append(data_temp)
     redshift = -1

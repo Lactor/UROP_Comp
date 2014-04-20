@@ -1,0 +1,10 @@
+import numpy as np
+
+def norm( sim_fl, data_fl, data_err):
+    alpha = np.sum(  data_fl**2/data_err)
+    beta = 2*np.sum(data_fl*sim_fl / data_err)
+    gamma = 3*beta + np.sum(sim_fl**2 / data_err)
+    
+    a = (-beta + np.sqrt(beta**2 + 4*gamma*alpha))/(2*alpha)
+
+    return a

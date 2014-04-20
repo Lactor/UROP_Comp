@@ -4,9 +4,17 @@ import os
 import math
 import matplotlib.pyplot as plt
 
+if len(sys.argv) == 2 and (sys.argv[1] == "--help" or sys.argv[1] == "-h"):
+    print("\n \
+    - Script to format data files from simulation into .txt files \n \
+    used in the comparison code.\n \
+    \n \
+    python3 Format_galaxies.py data_folder output_folder\n\n")
+    sys.exit()
+
 if len(sys.argv) != 3:
     print("ERROR number of arguments incorrect")
-    exit
+    sys.exit()
 
 data_folder = sys.argv[1]
 output_folder = sys.argv[2]
@@ -21,27 +29,31 @@ print(dist_base_2)
 
 data_files = glob.glob(data_folder+"/"+ "*.txt")
 
-have_wl = False
-data_wl = []
-   #Only need one array with the wavelengths
+
 
 for file_name in data_files:
     file = open(file_name, "r")
        #Opens File
     data_int = []
+    data_wl = []
     print("FILE: "+file_name)
        #Name of openfile
 
     for line in file:
         values = line.split(' ')
            #array with the numbers on each line
-        if not have_wl:
-            data_wl.append(float(values[0]))
-            
-
+        
+        
+           
+        wl = float(values[0])
         new_value = float(values[FILE_SECOND_COLUMN])
            #Luminosity per wavelength
-        new_value = new_value * data_wl[len(data_int)]**2/speed_of_light
+
+        
+        if(new_value == 0):
+            continue
+
+        new_value = new_value * wl**2/speed_of_light
            #Luminosity per frequency
         new_value = new_value/(4*math.pi*dist_base_2)
            #Luminosity to Flux
@@ -52,10 +64,11 @@ for file_name in data_files:
         #print(new_value)
         new_value = 23.9 - 2.5 * math.log10(new_value)
             #Flux to AB magnitude
-        print(new_value)
+        #print(new_value)
         
-        print(" " )
+        #print(" " )
         data_int.append( new_value)
+        data_wl.append(wl)
     
         
     have_wl = True
@@ -71,5 +84,6 @@ for file_name in data_files:
 
     for i in range(len(data_int)):
         output.write(str(data_wl[i]) + " " + str(data_int[i]) + "\n")
+    output.close()
     
 print("SUCCESS")

@@ -167,12 +167,14 @@ for file_data in data_files:
             
             if data_comp_wl[index] == input_files_data[k]['wl'][i]: 
                 #NO INTERPOLATION
-                chi_2 += ((data_comp[index]-input_files_data[k]['wl'][i])**2)/input_files_data[k]['err'][i]
+                chi_2 += ((data_comp[index]-input_files_data[k]['fl'][i])**2)/input_files_data[k]['err'][i]
                 int_comp +=1
 
             elif index +1 < len(data_comp_wl):  
                 #LINEAR INTERPOLATION
+                
                 interpol = (data_comp[index+1]-data_comp[index])/(data_comp_wl[index+1] - data_comp_wl[index])*(input_files_data[k]['wl'][i] - data_comp_wl[index]) + data_comp[index]
+                #print(input_files_data[k]['wl'][i], " " , input_files_data[k]['fl'][i], " " , interpol)
                 chi_2 += ((input_files_data[k]['fl'][i] - interpol)**2)/input_files_data[k]['err'][i]
                 int_comp +=1
             else:

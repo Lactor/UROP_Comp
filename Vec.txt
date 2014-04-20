@@ -1,0 +1,52 @@
+{'err': array([ 23.7343566,  25.7886464,  28.0161995, ...,  17.9303073,
+        18.487994 ,  19.987219 ]), 'fl': array([  2.87660454e-07,   2.87820113e-07,   2.87899941e-07, ...,
+         6.81537234e-07,   6.81617064e-07,   6.81696893e-07]), 'wl': array([  2.87660454e-07,   2.87820113e-07,   2.87899941e-07, ...,
+         6.81537234e-07,   6.81617064e-07,   6.81696893e-07]), 'red': 0.2977}
+../Data_formated/file_0.txt
+../Data_formated/file_100.txt
+../Data_formated/file_10.txt
+../Data_formated/file_11.txt
+../Data_formated/file_12.txt
+../Data_formated/file_13.txt
+../Data_formated/file_14.txt
+../Data_formated/file_15.txt
+../Data_formated/file_16.txt
+../Data_formated/file_17.txt
+../Data_formated/file_18.txt
+../Data_formated/file_19.txt
+../Data_formated/file_1.txt
+../Data_formated/file_20.txt
+../Data_formated/file_21.txt
+../Data_formated/file_22.txt
+../Data_formated/file_23.txt
+../Data_formated/file_24.txt
+../Data_formated/file_25.txt
+../Data_formated/file_26.txt
+../Data_formated/file_27.txt
+../Data_formated/file_28.txt
+../Data_formated/file_29.txt
+../Data_formated/file_2.txt
+../Data_formated/file_30.txt
+../Data_formated/file_31.txt
+../Data_formated/file_32.txt
+../Data_formated/file_33.txt
+../Data_formated/file_34.txt
+../Data_formated/file_35.txt
+../Data_formated/file_36.txt
+../Data_formated/file_37.txt
+../Data_formated/file_38.txt
+../Data_formated/file_39.txt
+../Data_formated/file_3.txt
+../Data_formated/file_40.txt
+../Data_formated/file_41.txt
+../Data_formated/file_42.txt
+../Data_formated/file_43.txt
+../Data_formated/file_44.txt
+../Data_formated/file_45.txt
+../Data_formated/file_46.txt
+../Data_formated/file_47.txt
+../Data_formated/file_48.txt
+../Data_formated/file_49.txt
+../Data_formated/file_4.txt
+../Data_formated/file_50.txt
+../Data_formated/file_51.txt

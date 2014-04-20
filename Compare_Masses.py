@@ -93,6 +93,8 @@ output = open(output_file, "w")
 for i in range(len(data_extracted['num'])):
     output.write("%d %.6e %.6e %.6e\n" % (int(data_extracted['num'][i]), data_extracted['red'][i], data_extracted['ms'][i], data_extracted['mf'][i]))
 
+output.close()
+
 
 ###################################################################
 #
@@ -101,26 +103,5 @@ for i in range(len(data_extracted['num'])):
 ###################################################################
 
     
-#PLOT ms as a function of mf
 
-plt.plot(data_extracted['mf'], data_extracted['ms'], "bo")
-plt.xlabel("Mass Fast")
-plt.ylabel("Mass Sim")
-plt.title("Plot of the mass of the simulation as a function of the mass of fast")
-plt.savefig("mf_ms.png")
-plt.show()
-
-
-#PLOT difference in mass as a function of redshift
-
-dif = []
-for i in range(len(data_extracted['ms'])):
-    dif.append(data_extracted['ms'][i] - data_extracted['mf'][i])
-
-plt.plot(data_extracted['red'], dif, "bo")
-plt.xlabel("Redshift")
-plt.ylabel("Diference M_sim - M_fast")
-plt.title("Plot of the difference in masses as a function of redshift")
-plt.savefig("red_dif.png")
-plt.show()
 

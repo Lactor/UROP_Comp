@@ -1,0 +1,9 @@
+
+def get_number( file_name):
+    found_number = False
+    number = 0
+    for i in range(len(file_name)):
+        
+
+    return str(number)
+

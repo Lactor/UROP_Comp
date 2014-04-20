@@ -1,0 +1,1 @@
+time python3 Comp_vec.py ../Data_formated/ Fits_Galax/gama_* && time python3 FastComp.py ../Data_formated/ Fits_Galax/gama_* && time python3 Comp_vec_norm.py ../Data_formated/ Fits_Galax/gama_* > output.log
