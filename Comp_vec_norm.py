@@ -6,6 +6,7 @@ import math
 import numpy as np
 import matplotlib.pyplot as plt
 import cosmocalc
+from Base import norm
 
 
 if len(sys.argv) == 2 and (sys.argv[1] == "--help" or sys.argv[1] == "-h"):
@@ -32,13 +33,7 @@ def get_number( file_name):
     return str(number)
 
 
-def norm( sim_fl, data_fl, data_err):
-    alpha = np.sum(  data_fl**2/data_err)
-    gamma = np.sum(sim_fl**2 / data_err)
-    
-    a = np.sqrt(gamma/alpha)
 
-    return a
 
 if len(sys.argv) < 4:
     sys.exit("Not enough arguments")

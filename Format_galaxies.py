@@ -6,8 +6,8 @@ import matplotlib.pyplot as plt
 
 if len(sys.argv) == 2 and (sys.argv[1] == "--help" or sys.argv[1] == "-h"):
     print("\n \
-    - Script to format data files from simulation into .txt files \n \
-    used in the comparison code.\n \
+    Given an input folder, formats the inside galaxy files (from simulation)\n \
+    Into usable files on the output_folder\n \
     \n \
     python3 Format_galaxies.py data_folder output_folder\n\n")
     sys.exit()
@@ -30,7 +30,6 @@ print(dist_base_2)
 data_files = glob.glob(data_folder+"/"+ "*.txt")
 
 
-
 for file_name in data_files:
     file = open(file_name, "r")
        #Opens File
@@ -43,8 +42,6 @@ for file_name in data_files:
         values = line.split(' ')
            #array with the numbers on each line
         
-        
-           
         wl = float(values[0])
         new_value = float(values[FILE_SECOND_COLUMN])
            #Luminosity per wavelength

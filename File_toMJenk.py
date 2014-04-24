@@ -1,10 +1,16 @@
 
-# using terminal arguments for the input file and the data folder.
 import sys
 import glob
 import math
 import matplotlib.pyplot as plt
 
+if len(sys.argv) == 2 and (sys.argv[1] == "--help" or sys.argv[1] == "-h"):
+    print("\n\
+    Given a simulation file, transforms the units to microJanksys \n\
+    The data is printed on the console.r\n\
+    \n\
+    python3 File_toMJenk.py input_file\n\n")
+    sys.exit()
 
 def get_number( file_name): #Returns the number of the file
     TEMPLATE = "file_"

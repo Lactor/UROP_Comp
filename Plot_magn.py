@@ -5,6 +5,15 @@ import cosmocalc
 
 SAVEFOLDER = "Graphs/"
 
+if len(sys.argv) == 2 and (sys.argv[1] == "--help" or sys.argv[1] == "-h"):
+    print("\n\
+    Given a set of galaxy files, whether from the simulation or otherwise.\n\
+    Plots the SEDs for a clear vizualization\n\
+    \n\
+    python3 Plot_magn.py sim_file1 ... sim_filen -o other_file1 ...\n\n")
+    sys.exit()
+
+
 def get_number( file_name):
     TEMPLATE = "file_"
     file_name = file_name.split("/")[-1]
@@ -47,16 +56,16 @@ def calculate_shift( value, redshift, dist, modulus_distance):
 
 
 files_data = []
-files_names = []
-index = 100000000
+files_names_sim = []
+files_names_other = []
+sign = False
 for i in range(1, len(sys.argv)):
     if sys.argv[i] == "-o":
-        index = len(files_names)
+        sign = True
+    else if sign:
+        files_names_other.append(sys.argv[i])
     else:
-        files_names.append(sys.argv[i])
-print(files_names)
-print(index)
-
+        files_names_sim.append(sys.argv[i])
 
 ###################################################################
 #
@@ -69,25 +78,37 @@ C = 1
 dist = -1
 modulus_distance = -1
 redshift = -1
-for i in range(len(files_names)):
-    print("Getting Data from: "+str(files_names[i]))
+names = []
+for i in range(len(files_names_sim)):
+    print("Getting Data (SIM) from: "+str(files_names_sim[i]))
+    names.append(get_number(files_names_sim[i])
     data_temp = [[], [], []]
-    temp_file = open(files_names[i], 'r')
+    temp_file = open(files_names_sim[i], 'r')
     for line in temp_file:
         values = line.split(' ')
+        
+        data_temp[0].append(float(values[0]))
+        data_temp[1].append(float(values[1]))
+        data_temp[2].append(0)
+    
+    files_data.append(data_temp)
+    redshift = -1
+    dist = -1
 
-        if i < index:
-            data_temp[0].append(float(values[0]))
-            data_temp[1].append(float(values[1]))
-            data_temp[2].append(0)
-
-        else:
-            if len(values) == 1:
-                redshift = float(values[0])
-            if len(values)>=2:
-                data_temp[0].append(float(values[0])/(1+redshift))
-                data_temp[1].append(C*calculate_shift(float(values[1]), redshift, dist, modulus_distance))
-                data_temp[2].append( C*2.5 * float(values[2])/float(values[1]))
+for i in range(len(files_names_other)):
+    print("Getting Data (OTH) from: "+str(files_names_other[i]))
+    data_temp = [[], [], []]
+    temp_file = open(files_names_other[i], 'r')
+    names.append(get_number(files_names_other[i])
+    for line in temp_file:
+        values = line.split(' ')
+        
+        if len(values) == 1:
+            redshift = float(values[0])
+        if len(values)>=2:
+            data_temp[0].append(float(values[0])/(1+redshift))
+            data_temp[1].append(C*calculate_shift(float(values[1]), redshift, dist, modulus_distance))
+            data_temp[2].append( C*2.5 * float(values[2])/float(values[1]))
     
     files_data.append(data_temp)
     redshift = -1
@@ -100,17 +121,13 @@ plt.ylabel("Magnitude")
 plt.gca().invert_yaxis()
 for i in range(len(files_data)):
     plot_type = "-"
-    if i>=index:
-        plot_type = "-"
-    #if files_data[i][2][0] !=0:
-        #plt.errorbar(files_data[i][0], files_data[i][1], yerr = files_data[i][2])
 
-    plt.plot(files_data[i][0], files_data[i][1], plot_type, label=get_number(files_names[i]))
-name = ""
-for i in range(len(files_names)):
-    name += get_number(files_names[i]) + "_"
-name +=".png"
-print(name)
+    plt.plot(files_data[i][0], files_data[i][1], plot_type, label=get_number(names[i]))
+graph_name = ""
+for i in range(len(names)):
+    graph_name += get_number(names[i]) + "_"
+graph_name +=".png"
+print(graph_name)
 
 plt.axis(ymin = 0)
 

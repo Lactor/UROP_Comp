@@ -1,3 +1,9 @@
+import numpy as np
+
+
+''' 
+File with common function used in other scripts.
+'''
 
 def is_number(a):
     if a<='9' and a>= '0':
@@ -22,3 +28,10 @@ def get_number( string ):
 
     return number
 
+def norm( sim_fl, data_fl, data_err):
+    alpha = np.sum(  data_fl**2/data_err)
+    gamma = np.sum(sim_fl**2 / data_err)
+    
+    a = np.sqrt(gamma/alpha)
+
+    return a

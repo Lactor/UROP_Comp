@@ -1,0 +1,23 @@
+\documentclass[11pt]{report}
+\pagestyle{plain}
+\usepackage{graphicx}
+\usepackage{indentfirst}
+\usepackage{float}
+\usepackage[top=2.5cm, left=2.0cm, right=2.0cm, bottom=2.5cm]{geometry}
+\newcommand{\unit}[1]{\ensuremath{\, \mathrm{#1}}}
+%\restylefloat{table}
+%\restylefloat{figure}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+\newcommand{\horline}{\begin{center} \line(1,0){470} \end{center}}
+
+
+\author{Francisco Machado}
+\title{Presentation Ideas}
+\begin{document}
+
+\maketitle
+
+\section{Introduction}

@@ -4,6 +4,15 @@ import math
 import numpy as np
 import matplotlib.pyplot as plt
 
+if len(sys.argv) == 2 and (sys.argv[1] == "--help" or sys.argv[1] == "-h"):
+    print("\n\
+    Given a file with the masses obtained and the presented plots a series of graphs .\n\
+    Graphs are saved to the results_folder\n\
+    \n\
+    python3 Plot_Mass_res.py data_file results_folder\n\n")
+    sys.exit()
+
+
 data_file_name = sys.argv[1]
 results_folder = sys.argv[2]
 

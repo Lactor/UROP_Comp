@@ -2,6 +2,14 @@ import urllib.request
 import sys
 import os.path
 
+if len(sys.argv) == 2 and (sys.argv[1] == "--help" or sys.argv[1] == "-h"):
+    print("\n \
+    Given an input file from the GAMA query, automatically downloads the fits files and the other properties.\n \
+    They are saved into output folder, with the name ID#.fit and properties, the fit files and the properties respectively \n \
+    \n \
+    python3 GAMA_Scraper.py input_file output_folder\n\n")
+    sys.exit()
+
 if len(sys.argv) != 3:
     sys.exit("ERROR: Wrong number of arguments")
     
@@ -59,7 +67,7 @@ for line in input_file:
 MAIN_URL = 'http://www.gama-survey.org/dr2/tools/sov.php?cataid='
 MASS_URL = 'http://www.gama-survey.org/dr2/tools/querytab.php?tab=StellarMasses&cataid='
 
-massFile = open(output_folder + "masses.txt", "w")
+massFile = open(output_folder + "properties.txt", "w")
 properties = ['logmstar', 'dellogmstar', 'logage', 'dellogage', 'logtau', 'dellogtau', 'metal', 'delmetal']
 
 

@@ -1,5 +1,8 @@
 import sys
 
+''' Script used to generate and offset SED '''
+
+
 input_file_name = sys.argv[1]
 input_file = open(input_file_name, 'r')
 output_file_name = sys.argv[2]

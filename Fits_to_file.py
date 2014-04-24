@@ -6,6 +6,15 @@ import glob
 import os
 import matplotlib.pyplot as plt
 
+if len(sys.argv) == 2 and (sys.argv[1] == "--help" or sys.argv[1] == "-h"):
+    print("\n\
+    Given a folder, transforms all of the .fits files inside into SED used in the comparison tool.\n\
+    The results are stored in an individual file for each inputed galaxy on the out_put folder.\n\
+    First line of file has the redshift and the remaining has the SED information\n\
+    \n\
+    python3 Fits_to_file input_folder output_folder\n\n")
+    sys.exit()
+
 
 input_folder= sys.argv[1]
 if input_folder[-1] != '/':

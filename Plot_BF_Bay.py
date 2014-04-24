@@ -2,6 +2,16 @@ import matplotlib.pyplot as plt
 import numpy as np
 import sys
 
+if len(sys.argv) == 2 and (sys.argv[1] == "--help" or sys.argv[1] == "-h"):
+    print("\n\
+    Given a file with the Baysean masses and a file with the Best FiT and GAMA masses.\n\
+    Plots graphs that better allow the understanding of the relationships\n\
+    \n\
+    python3 Plot_BF_Bay.py Best_fit_and_GAMA Baysean_file\n\n")
+    sys.exit()
+
+
+
 BF_file_name = sys.argv[1]
 Bay_file_name = sys.argv[2]
 
@@ -63,6 +73,7 @@ plt.plot([9.5,12],[9.5,12], 'r-')
 plt.ylabel("Best fit")
 plt.xlabel("Baysean")
 plt.colorbar()
+plt.savefig("Bay-Best.png")
 plt.show()
 
 avg =  np.sum(Bay_array-BF_array)/len(Bay_array)
