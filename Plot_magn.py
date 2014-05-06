@@ -55,14 +55,15 @@ def calculate_shift( value, redshift, dist, modulus_distance):
 ###################################################################
 
 
-files_data = []
+files_data_sim = []
+files_data_oth = []
 files_names_sim = []
 files_names_other = []
 sign = False
 for i in range(1, len(sys.argv)):
     if sys.argv[i] == "-o":
         sign = True
-    else if sign:
+    elif sign:
         files_names_other.append(sys.argv[i])
     else:
         files_names_sim.append(sys.argv[i])
@@ -78,10 +79,11 @@ C = 1
 dist = -1
 modulus_distance = -1
 redshift = -1
-names = []
+names_sim = []
+names_oth = []
 for i in range(len(files_names_sim)):
     print("Getting Data (SIM) from: "+str(files_names_sim[i]))
-    names.append(get_number(files_names_sim[i])
+    names_sim.append(get_number(files_names_sim[i]))
     data_temp = [[], [], []]
     temp_file = open(files_names_sim[i], 'r')
     for line in temp_file:
@@ -91,7 +93,7 @@ for i in range(len(files_names_sim)):
         data_temp[1].append(float(values[1]))
         data_temp[2].append(0)
     
-    files_data.append(data_temp)
+    files_data_sim.append(data_temp)
     redshift = -1
     dist = -1
 
@@ -99,7 +101,7 @@ for i in range(len(files_names_other)):
     print("Getting Data (OTH) from: "+str(files_names_other[i]))
     data_temp = [[], [], []]
     temp_file = open(files_names_other[i], 'r')
-    names.append(get_number(files_names_other[i])
+    names_oth.append(get_number(files_names_other[i]))
     for line in temp_file:
         values = line.split(' ')
         
@@ -110,7 +112,7 @@ for i in range(len(files_names_other)):
             data_temp[1].append(C*calculate_shift(float(values[1]), redshift, dist, modulus_distance))
             data_temp[2].append( C*2.5 * float(values[2])/float(values[1]))
     
-    files_data.append(data_temp)
+    files_data_oth.append(data_temp)
     redshift = -1
     dist = -1
 
@@ -119,20 +121,25 @@ plt.xscale("log")
 plt.xlabel("Wavelength")
 plt.ylabel("Magnitude")
 plt.gca().invert_yaxis()
-for i in range(len(files_data)):
-    plot_type = "-"
+for i in range(len(files_data_sim)):
+    plt.plot(files_data_sim[i][0], files_data_sim[i][1], label=get_number(names_sim[i]))
 
-    plt.plot(files_data[i][0], files_data[i][1], plot_type, label=get_number(names[i]))
+for i in range(len(files_data_oth)):
+    plt.errorbar(files_data_oth[i][0], files_data_oth[i][1], yerr = files_data_oth[i][2],  label=get_number(names_oth[i]))
+
 graph_name = ""
-for i in range(len(names)):
-    graph_name += get_number(names[i]) + "_"
+for i in range(len(names_sim)):
+    graph_name += get_number(names_sim[i]) + "_"
+for i in range(len(names_oth)):
+    graph_name += get_number(names_oth[i]) + "_"
 graph_name +=".png"
 print(graph_name)
+plt.axis([3*0.1**7, 0.1**6, -18, -22])
 
-plt.axis(ymin = 0)
+#plt.axis(ymin = 0)
 
 plt.legend(loc = 'lower right')
 
-plt.savefig(SAVEFOLDER + name)
+plt.savefig(SAVEFOLDER + graph_name)
 plt.show()
         

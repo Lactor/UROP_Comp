@@ -14,6 +14,7 @@ def is_number(a):
 def get_number( string ):
     found_number = False
     number = 0
+    string = (string.split("/"))[-1]
     for i in range(len(string)):
 
         if is_number(string[i]):

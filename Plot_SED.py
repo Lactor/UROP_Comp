@@ -35,7 +35,7 @@ index = 100000000
 for i in range(1, len(sys.argv)):
     if sys.argv[i] == "-o":
         sign = True
-    else if sign:
+    elif sign:
         files_names_other.append(sys.argv[i])
     else:
         files_names_sim.append(sys.argv[i])
@@ -61,10 +61,10 @@ for i in range(len(files_names_other)):
     print(files_names_other[i])
     for line in temp_file:
         values = line.split(' ')
-            if len(values)>=2:
-                print(values)
-                data_temp[0].append(float(values[0]))
-                data_temp[1].append(math.log(float(values[1])))
+        if len(values)>=2:
+            print(values)
+            data_temp[0].append(float(values[0]))
+            data_temp[1].append(math.log(float(values[1])))
 
     files_data.append(data_temp)
 

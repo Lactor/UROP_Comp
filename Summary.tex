@@ -1,4 +1,4 @@
-\documentclass[11pt]{report}
+\documentclass[11pt]{article}
 \pagestyle{plain}
 \usepackage{graphicx}
 \usepackage{indentfirst}
@@ -24,10 +24,25 @@
 
 The goal of this document is to provide an understanding of the code written to do the comparisons between galaxies.
 I will cover each file and explain how the input is taken and then the workings of the program.
+For each file, by running the program in the following manner:
+\begin{verbatim}
+python3 script_name.py -h
+\end{verbatim}
+or:
+\begin{verbatim}
+python3 script_name.py --help
+\end{verbatim}
+
+Gives a small description of the file as well as the list of arguments it requires.
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Format\_galaxies.py}
 
-The purpose of this file is to preprocess the simulation galaxy's SED, transforming the data from Luminosity per wavelength into AB magnitude at a distance of $10 \unit{pc}$.
+The purpose of this file is to preprocess the Illustris simulation galaxy's SED, transforming the data from Luminosity per wavelength into AB magnitude at a distance of $10 \unit{pc}$.
 
 \subsection{Input}
 
@@ -88,7 +103,11 @@ For the remainder of the article let's define the absolute magnitude of a simula
 
 The code then saves each file into a new file of the same name of the original on the Output\_Folder. Each file consists on two columns separated by a space (' ') where the first column is the wavelength ($\lambda$) and the second will be the absolute AB magnitude for that wavelength ($M_{AB}$).
 
-\horline 
+\newpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{FastComp.py}
 
@@ -123,7 +142,7 @@ Then the distance is transformed into $\unit{pc}$, (now $D_{pc}$) and used to ca
 \mu = 5 \cdot ( \log_{10}( D_{pc}) - 1)
 \end{equation}
 
-Now for each data point in the Input\_File\_i we tranform the flux ($S_\nu$) into an absolute AB magnitude ($M_{AB}$) (AB magnitude measured at a distance of $10 \unit{pc}$). To do this, the flux is firstly used to calculate the apparent AB magnitude ($m_{AB}$) and then we make use of the modulus distance ($\mu$) to tran2sform from apparent to absolute.
+Now for each data point in the Input\_File\_i we tranform the flux ($S_\nu$) into an absolute AB magnitude ($M_{AB}$) (AB magnitude measured at a distance of $10 \unit{pc}$). To do this, the flux is firstly used to calculate the apparent AB magnitude ($m_{AB}$) and then we make use of the modulus distance ($\mu$) to transform from apparent to absolute.
 
 \begin{align}
 m_{AB} &= 23.9 - 2.5 \cdot \log_{10}(S_\nu)\\
@@ -136,7 +155,7 @@ The error will also be propagated.
 \delta M_{AB} &= \delta m_{AB}
 \end{align*}
 
-Here we are assuming that there is no error in the distance since we have no error in the redshift which we can take into account.
+We are {\bf not taking into account error in the redshift.} An improvement may be done on this part.
 
 For the remainder of the articles let's define the absolute magnitude of an input galaxy as $M_{I}$, and its error as $\delta M_I$.
 
@@ -167,6 +186,14 @@ Note, if there are values of wavelengths in the input file greater than the larg
 
 The program then saves the resulting $\chi^2$ of all the file comparisons to a different file in the Results folder for each input file. Each file is composed of two columns, one is corresponds to a simulated galaxy and the other one is the $\chi^2$ of the comparison of the input file with that simulated galaxy. The values are ordered by the $\chi^2$ for quick reference.
 
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
 \section{Fits\_to\_File.py}
 
 The goal of this program is to transfrom the .fit from the Gama Survey data set to text files with a formating that is accepted by the FastComp.py program.
@@ -191,9 +218,9 @@ First let's list the assumptions on the fit file formating:
 \item There is only one part in the file, meaning only one header and only one set of data.
 \item The redshift label on the header is 'Z'
 \item The range of the wavelengths is given by the headers 'WMIN' and 'WMAX', in angstroms ($A$).
-\item The wavelengths are uniformly distributed in this range
-\item The first row of data corresponds to the flux in units of $10^{-17}\unit{erg\cdot s^{-1}\cdot cm^{-2} \cdot A^{-1}}$
-\item The second row is the error associated with the flux in the same units.
+\item {\bf The wavelengths are uniformly distributed in this range}
+\item The first row or first array of data corresponds to the flux in units of $10^{-17}\unit{erg\cdot s^{-1}\cdot cm^{-2} \cdot A^{-1}}$
+\item The second row or third array is the error associated with the flux in the same units.
 \end{itemize}
 
 The file starts by reading the value of the redshift and creating the possible values of the wavelengths, based on the limits in the header.
@@ -230,5 +257,132 @@ The program then for each file, saves a file in the output folder with the same 
 \item First line containing the redshift of the galaxy
 \item The remainder consists of lines with 3 values separated by a space containing the wavelength of light, the flux of the light in $\unit{\mu Jy}$ and the error of the flux in the same units
 \end{itemize}
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Comp\_vec.py}
+
+This script corresponds to an improvement of the FastComp.py file. Instead of using arrays and running through all of them for each calculation, the data is vectorized as much as possible. This way we obtain faster and cleaner code. The only part that was not vectorized was the interpolation which is still done one element at a time.
+
+\subsection{Input}
+Like the FastComp.py file, the input is 
+\begin{verbatim}
+python3 Comp_vec.py Data_Folder Input_File_1 Input_File_2 ... Input_File_N
+\end{verbatim}
+
+\subsection{Notes}
+
+All of the assumptions and calculations done in FastComp.py are reproduced here, so in case of any questions reference back to it.
+
+A difference is that now all of the input is stored in the same structure, a dictionary named {\bf data} with entries {\bf 'red'}, {\bf 'wl'}, {\bf 'fl'} and {\bf 'err'} which store the redshift, and array of the wavelengths, and array of the corresponding fluxes, and an array of the corresponding errors, respectively.
+
+\newpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Comp\_vec\_norm.py}
+
+The purpose of this script is to find the best fit galaxy up to a constant factor, meaning that each inpu galaxy is multiplied by the constant factor that minimizes the $\chi^2$ and then the $\chi^2$ is calculated. The Illustris galaxy with the least $\chi^2$ is then chosen as the best fit.
+
+{\bf Input}
+
+The input for this file is the same as for Comp\_vec.py and FastComp.py.
+
+\begin{verbatim}
+python3 Comp_vec_norm.py Data_Folder Input_File_1 Input_File_2 ... Input_File_N
+\end{verbatim}
+
+{\bf Data Processing}
+
+The data processing methods are the sames as in FastComp.py, but with vectorized structures. Please refer to the FastComp.py section to read the details.
+
+{\bf Data Comparison}
+
+In this file the data comparison is different from the other files. Like normally we load the input files and then go through each Illustris galaxy file and compare the entirety of the input galaxies.
+
+However now instead of comparing directly the SED's, first it is found the constant such that multiplied by all of the data in the input galaxy minimizes the value of $\chi^2$.
+
+To find the value of the constant $A$ we minimize $\chi^2$ in order to it:
+\begin{align}
+\chi^2 &= \sum \frac{(AM_I - M_S)^2}{A\delta M_I}\\
+\frac{\partial \chi^2}{\partial A} = 0 &= \sum \frac{2M_I(M_I-M_S) A\delta M_I - (AM_I - M_S)^2\delta M_I}{A^2\delta M_I^2} \\
+0 &= \sum \frac{2A^2M_I^2 - 2AM_IM_S - A^2M_I^2 + 2AM_IM_S - M_S^2}{\delta M_I} = A^2\sum \frac{M_I^2}{\delta M_I} - \sum\frac{M_S^2}{\delta M_I}\\
+A &= \sqrt{\frac{ \sum\frac{M_S^2}{\delta M_I}}{\sum \frac{M_I^2}{\delta M_I}}}
+\end{align}
+
+Both values are then multiplied by $A$ and the $\chi^2$ is calculated.
+
+\begin{equation}
+\chi^2 = \sum \frac{ (AM_I - M_S)^2}{A\delta M_I}
+\end{equation}
+
+The results are then ordered by $\chi^2$, like in the other files and saved into a file for each input galaxy.
+
+This file was not expanded very throughouly so the values of $A$ are not save in the results file along with the $\chi^2$. It should be implemented in the future.
+
+\newpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Comp\_Bay.py and Prof\_Comp\_Bay.py}
+
+In this script we shift the comparison measure from the $\chi^2$ test to a baysean approach. We are no longer interested in fitting a galacy, but recovering the properties of the inputed galaxy from the Illustris galaxies.
+
+{\bf Input}
+
+Besides the parameters required for the best fitting scripts, this script also requires a file which specifies the various properties of the Illustris galaxies. At this moment only metalicity and stellar mass are implemented, but more properties can be introduced without much complexity added to the code.
+
+\begin{verbatim}
+python3 Prof_Comp_Bay.py data_folder properties_file results_folder \
+input_file_1 ... input_file_N
+\end{verbatim}
+
+{\bf Data Processing}
+
+The process is very similar to the best fit scripts. The input galaxies are opened and stored into a dictionary. 
+Then the properties file is opened and their are stored in a dictionary with 1 entries which specifies the number of the Illustris galaxy. To this key it is associated an array with the properties of the galaxy. In position 0 is the stellar mass and in position 1 is the metalicity.
+
+The rest of the data processing to the galaxies is the same as the best fit files.
+
+
+
+\newpage
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{GAMA\_Scraper.py}
+
+\newpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Trim\_prop\_file.py}
+
+\newpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\section{Get\_N\_Gal\_from\_trim.py}
+
+
+\newpage
+
+
+
 
 \end{document}

@@ -52,6 +52,7 @@ for i in range(len(input_file_names)):
     #data dictionary redshift - red
     #wavelengths -wl ; flux - fl; error - err
     input_file = open(input_file_names[i], "r")
+    print(input_file_names[i])
     redshift = -1
     temp_wl = []
     temp_fl = []
@@ -63,6 +64,7 @@ for i in range(len(input_file_names)):
             data['red'] = float(values[0])
             #Redshift is the first value of the file
         else:
+            
             if (float(values[2]) > 0):
                 temp_wl.append( float(values[0])/(1+data['red']))
                 temp_fl.append( float(values[1]))

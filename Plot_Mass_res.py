@@ -53,7 +53,7 @@ print("STD error: ", std_relerror)
 #PLOT ms as a function of mf
 plt.plot(data_extracted['mf'], data_extracted['ms'], "bo")
 plt.plot([0,100],[0,100], "r-")
-plt.xlabel("Mass Fast")
+plt.xlabel("Mass Data")
 plt.ylabel("Mass Sim")
 plt.axis( [np.min(data_extracted['mf']), np.max(data_extracted['ms']), np.min(data_extracted['ms']), np.max(data_extracted['ms'])])
 plt.title("Plot of the mass of the simulation as a function of the mass of fast")

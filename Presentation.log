@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.6-1.40.14 (TeX Live 2014/dev) (format=pdflatex 2014.1.6)  24 APR 2014 04:55
+This is pdfTeX, Version 3.1415926-2.6-1.40.14 (TeX Live 2014/dev) (format=pdflatex 2014.1.6)  25 APR 2014 09:58
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -286,48 +286,69 @@ Underfull \hbox (badness 10000) in paragraph at lines 27--28
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 47--48
+Underfull \hbox (badness 10000) in paragraph at lines 33--34
 
  []
 
+<Graphs/42_33_gal_1028.png, id=8, 578.16pt x 433.62pt>
+File: Graphs/42_33_gal_1028.png Graphic file (type png)
 
-Underfull \hbox (badness 10000) in paragraph at lines 49--50
+<use Graphs/42_33_gal_1028.png>
+Package pdftex.def Info: Graphs/42_33_gal_1028.png used on input line 46.
+(pdftex.def)             Requested size: 400.38872pt x 300.28984pt.
+ [1]
+<Fits_Galax/red_dif.png, id=17, 578.16pt x 433.62pt>
+File: Fits_Galax/red_dif.png Graphic file (type png)
+
+<use Fits_Galax/red_dif.png>
+Package pdftex.def Info: Fits_Galax/red_dif.png used on input line 53.
+(pdftex.def)             Requested size: 400.38872pt x 300.28984pt.
+ [2 <./Graphs/42_33_gal_1028.png>]
+Underfull \hbox (badness 10000) in paragraph at lines 67--68
 
  []
 
+<Results_Bay/diff_red.png, id=22, 578.16pt x 433.62pt>
+File: Results_Bay/diff_red.png Graphic file (type png)
 
-Underfull \hbox (badness 10000) in paragraph at lines 55--56
+<use Results_Bay/diff_red.png>
+Package pdftex.def Info: Results_Bay/diff_red.png used on input line 73.
+(pdftex.def)             Requested size: 400.38872pt x 300.28984pt.
+ [3 <./Fits_Galax/red_dif.png>]
+<Results_Bay/Bay-Best.png, id=31, 578.16pt x 433.62pt>
+File: Results_Bay/Bay-Best.png Graphic file (type png)
+
+<use Results_Bay/Bay-Best.png>
+Package pdftex.def Info: Results_Bay/Bay-Best.png used on input line 81.
+(pdftex.def)             Requested size: 400.38872pt x 300.28984pt.
+ [4 <./Results_Bay/diff_red.png>]
+Underfull \hbox (badness 10000) in paragraph at lines 92--93
 
  []
 
-
-Underfull \hbox (badness 10000) in paragraph at lines 57--58
-
- []
-
-[1] (./Presentation.aux) ) 
+[5 <./Results_Bay/Bay-Best.png>] (./Presentation.aux) ) 
 Here is how much of TeX's memory you used:
- 2931 strings out of 493387
- 39267 string characters out of 6143041
- 107250 words of memory out of 5000000
- 6325 multiletter control sequences out of 15000+600000
+ 2959 strings out of 493387
+ 39859 string characters out of 6143041
+ 106250 words of memory out of 5000000
+ 6345 multiletter control sequences out of 15000+600000
  10440 words of font info for 40 fonts, out of 8000000 for 9000
  953 hyphenation exceptions out of 8191
- 38i,6n,26p,491b,189s stack positions out of 5000i,500n,10000p,200000b,80000s
-</usr/share/texlive/texmf-dist/fonts/type1/public/ams
-fonts/cm/cmbx10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/
-cm/cmmi10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmm
-i8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb>
-</usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/s
-hare/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb></usr/share/te
-xlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/share/texlive/te
-xmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/share/texlive/texmf-dist
-/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts
-/type1/public/amsfonts/cm/cmsy8.pfb>
-Output written on Presentation.pdf (2 pages, 100357 bytes).
+ 38i,6n,26p,495b,223s stack positions out of 5000i,500n,10000p,200000b,80000s
+</usr/share/texlive/texm
+f-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/share/texlive/texmf-dist
+/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texlive/texmf-dist/fonts
+/type1/public/amsfonts/cm/cmmi8.pfb></usr/share/texlive/texmf-dist/fonts/type1/
+public/amsfonts/cm/cmr10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/
+amsfonts/cm/cmr12.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfont
+s/cm/cmr17.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cm
+r6.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb><
+/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/s
+hare/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb>
+Output written on Presentation.pdf (6 pages, 236148 bytes).
 PDF statistics:
- 51 PDF objects out of 1000 (max. 8388607)
- 36 compressed objects within 1 object stream
+ 72 PDF objects out of 1000 (max. 8388607)
+ 45 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
- 1 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 21 words of extra memory for PDF output out of 10000 (max. 10000000)
 

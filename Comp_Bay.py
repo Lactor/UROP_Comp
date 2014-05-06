@@ -13,12 +13,12 @@ if len(sys.argv) == 2 and (sys.argv[1] == "--help" or sys.argv[1] == "-h"):
     Script that runs the comparison between the input files and the simulation files.\n\
     The results are stored in an individual file for each inputed galaxy on the result_folder\n\
     \n\
-    python3 data_folder mass_file result_folder inp_file1 inp_file2 ...\n\n")
+    python3 Comp_Bay.py data_folder properties_file result_folder inp_file1 inp_file2 ...\n\n")
     sys.exit()
 
 
 data_folder = sys.argv[1]
-mass_file_name = sys.argv[2]
+prop_file_name = sys.argv[2]
 result_folder = sys.argv[3]
 input_file_names = sys.argv[4:]
 input_files_data = []
@@ -30,16 +30,16 @@ if result_folder[-1] != '/':
 
 ##################################################################
 #
-#  Open Mass File and get values
+#  Open Properties File and get values
 #
 ##################################################################
-print("Loading Masses")
-masses = {}
-mass_file = open(mass_file_name, "r")
-for line in mass_file:
+print("Loading Properties")
+prop = {}
+prop_file = open(prop_file_name, "r")
+for line in prop_file:
     values = line.split(' ')
-    masses[values[0]] = float(values[1])
-mass_file.close()
+    prop[values[0]] = [float(values[1]), float(values[2])]
+prop_file.close()
 
 
 ###################################################################
@@ -51,7 +51,7 @@ print("Loading Input Files")
 
 doNotAdd = False #For files with problems in the values
 for i in range(len(input_file_names)):
-
+    print(input_file_names[i])
     data = {"red": -1 } 
     #data dictionary redshift - red
     #wavelengths -wl ; flux - fl; error - err
@@ -62,17 +62,17 @@ for i in range(len(input_file_names)):
     temp_err = []
     for line in input_file:
         values = line.split(' ')
-
         if data['red'] ==-1:
             data['red'] = float(values[0])
             #Redshift is the first value of the file
         else:
-            if (float(values[2]) > 0):
+            if (len(values) ==3 and float(values[1]) >0 and float(values[2]) > 0):
                 temp_wl.append( float(values[0])/(1+data['red']))
                 temp_fl.append( float(values[1]))
                 temp_err.append( float(values[2]))
 
-            if len(temp_fl)>1 and temp_fl[-1] <= 0:
+            elif len(temp_fl)>1 and temp_fl[-1] <= 0:
+                print(values)
                 doNotAdd = True
 
     if doNotAdd == False:
@@ -82,11 +82,8 @@ for i in range(len(input_file_names)):
         data['num'] = B.get_number(input_file_names[i])
 
         input_files_data.append(data)
-        
     input_file.close()
         
-
-
 
 ###################################################################
 #
@@ -137,6 +134,7 @@ print("Comparing SED with simulation file:")
 data_files = glob.glob(data_folder+"/"+ "*.txt")
 
 cumu_mass = np.zeros(len(input_files_data))
+cumu_met = np.zeros(len(input_files_data))
 cumu = np.zeros(len(input_files_data))
 
 data_comp_wl = []
@@ -202,14 +200,21 @@ for file_name in data_files:
             #print(input_files_data[k]['wl'][i], " " , input_files_data[k]['fl'][i], " " , file_data_fl[i])
             
             
-        chi_2 = np.sum( (input_files_data[k]['fl'] - file_data_fl)**2/input_files_data[k]['err'])            
-        chi_2 /= int_comp #normalizes the chi_2 by the number of comparisons
+        chi_2 = np.sum( (input_files_data[k]['fl'] - file_data_fl)**2/input_files_data[k]['err'])    
+        try:
+            chi_2 /= int_comp #normalizes the chi_2 by the number of comparisons
+        except:
+            print(int_comp)
         if int_comp != len(input_files_data[k]['fl']):
             print("ERRROR NOT ALL COMPARED")
         
         factor = np.exp(-chi_2)
         cumu[k] += factor
-        cumu_mass[k] += factor * masses[str(B.get_number(file_name))]
+        #print(str(B.get_number(file_name)))
+        #print( "MASS: ",prop[str(B.get_number(file_name))][0])
+        cumu_mass[k] += factor * prop[str(B.get_number(file_name))][0]
+        #print( "MET: ",prop[str(B.get_number(file_name))][1])
+        cumu_met[k] += factor * prop[str(B.get_number(file_name))][1]
     data_comp_file.close()
 
 
@@ -218,12 +223,13 @@ for file_name in data_files:
 #               PRINT RESULTS TO FILE
 #
 ###################################################################
-print("Calculating Masses")
+print("Calculating Properties")
 
 masses_input = cumu_mass/cumu
+met_input = cumu_met/cumu
 results = open(result_folder + "results.out", "w")
 for i in range(len(input_files_data)):
-    results.write( str(input_files_data[i]['num'])+ " "+str(masses_input[i])+ "\n")
+    results.write( str(input_files_data[i]['num'])+ " "+str(masses_input[i])+" " + str(met_input[i]) + "\n")
 results.close()
 
 
