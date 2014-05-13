@@ -10,11 +10,7 @@ import Base as B
 SIZE_GAL_FILE = 240
 
 if len(sys.argv) == 2 and (sys.argv[1] == "--help" or sys.argv[1] == "-h"):
-    print("\n\
-    Script that runs the comparison between the input files and the simulation files.\n\
-    The results are stored in an individual file for each inputed galaxy on the result_folder\n\
-    \n\
-    python3 Bay_MPI.py data_folder properties_file result_folder inp_file1 inp_file2 ...\n\n")
+   print(" MPI IMPLEMENTATION OF Baysean interference for the galaxy fittin")
     sys.exit()
 
 
@@ -197,7 +193,7 @@ def Comp(file_name):
         
         else:
             if len(values) == 3:
-                wl = float(values[0])
+                wl = float(values[0])/(1+red)
                 dat = float(values[1])
                 err = float(values[2])
                 if dat > 0 and err > 0:
