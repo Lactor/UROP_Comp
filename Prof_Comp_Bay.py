@@ -13,7 +13,7 @@ if len(sys.argv) == 2 and (sys.argv[1] == "--help" or sys.argv[1] == "-h"):
     Script that runs the comparison between the input files and the simulation files.\n\
     The results are stored in an individual file for each inputed galaxy on the result_folder\n\
     \n\
-    python3 Comp_Bay.py data_folder properties_file result_folder inp_file1 inp_file2 ...\n\n")
+    python3 Prof_Comp_Bay.py data_folder properties_file result_folder inp_file1 inp_file2 ...\n\n")
     sys.exit()
 
 
