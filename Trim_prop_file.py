@@ -48,6 +48,7 @@ parts = prop_file_name.split('/')
 parts[-1] = "trim_aux_properties.txt"
 
 trim_file_name = ""
+
 for i in parts:
     trim_file_name += i + "/"
 trim_file_name = trim_file_name[0:-1]
