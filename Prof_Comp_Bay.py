@@ -202,8 +202,9 @@ def Comp(file_name, have_wl):
             file_data_fl[i] = (data_comp[index+1]-data_comp[index])/(data_comp_wl[index+1] - data_comp_wl[index])*(input_files_data[k]['wl'][i] - data_comp_wl[index]) + data_comp[index]
             int_comp +=1
             #print(input_files_data[k]['wl'][i], " " , input_files_data[k]['fl'][i], " " , file_data_fl[i])
-            
-            
+        
+
+        
         chi_2 = np.sum( (input_files_data[k]['fl'] - file_data_fl)**2/input_files_data[k]['err'])    
         try:
             chi_2 /= int_comp #normalizes the chi_2 by the number of comparisons

@@ -21,8 +21,8 @@ if len(sys.argv) == 2 and (sys.argv[1] == "--help" or sys.argv[1] == "-h"):
 data_folder = sys.argv[1]
 prop_file_name = sys.argv[2]
 result_folder = sys.argv[3]
-nGal = len(glob.glob(data_folder+"/"+ "*.txt")))
-galaxy_file_data = np.zeros(SIZE_GAL_FILE, nGal)
+nGal = len(glob.glob(data_folder+"/"+ "*.txt"))
+galaxy_file_data = np.zeros((nGal, SIZE_GAL_FILE))
 galaxy_numbers = np.zeros(nGal)
 gal_wl = np.zeros(SIZE_GAL_FILE)
 input_file_names = sys.argv[4:]
@@ -70,7 +70,7 @@ def LoadSimFiles():
                 gal_wl[index] = float(values[0])
             galaxy_file_data[i][index] = float(values[1])
             index+=1
-        galaxy_numbers[i] = int(B.get_number(data_files[i]))
+        galaxy_numbers[i] = B.get_number(data_files[i])
         gal_file.close()
         
 ###################################################################
@@ -186,7 +186,7 @@ def Comp(file_name):
         
         else:
             if len(values) == 3:
-                wl = float(values[0])
+                wl = float(values[0])/(1+red)
                 dat = float(values[1])
                 err = float(values[2])
                 if dat > 0 and err > 0:
@@ -219,6 +219,7 @@ def Comp(file_name):
 
         file_data_fl = Calculate_Inter(base_interpol, inp_wl,k)
             
+
         chi_2 = np.sum( (inp_dat - file_data_fl)**2/inp_err)    
         
         chi_2 /= np.shape(inp_dat)[0] #normalizes the chi_2 by the number of comparisons
@@ -228,9 +229,9 @@ def Comp(file_name):
         cumu += factor
         #print(str(B.get_number(file_name)))
         #print( "MASS: ",prop[str(B.get_number(file_name))][0])
-        cumu_mass += factor * prop[galaxy_numbers[k][0]][0]
+        cumu_mass += factor * prop[str(int(galaxy_numbers[k]))][0]
         #print( "MET: ",prop[str(B.get_number(file_name))][1])
-        cumu_met += factor * prop[galaxy_numbers[k][0]][1]
+        cumu_met += factor * prop[str(int(galaxy_numbers[k]))][1]
 
     return (cumu_mass/cumu, cumu_met/cumu)
 
@@ -257,4 +258,3 @@ for i in range(len(input_file_names)):
         results.write(str(name) + " " +str(p[0]) + " " + str(p[1]) + "\n")
 
 results.close()
-    

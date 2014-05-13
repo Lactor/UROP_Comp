@@ -25,8 +25,8 @@ result_folder = sys.argv[3]
 nGal = len(glob.glob(data_folder+"/"+ "*.txt"))
 localgalaxy_numbers = np.zeros(nGal)
 galaxy_numbers = np.zeros(nGal)
-localgalaxy_file_data = np.zeros(SIZE_GAL_FILE, nGal)
-galaxy_file_data = np.zeros(SIZE_GAL_FILE, nGal)
+localgalaxy_file_data = np.zeros(nGal, SIZE_GAL_FILE)
+galaxy_file_data = np.zeros(nGal, SIZE_GAL_FILE)
 local_gal_wl = np.zeros(SIZE_GAL_FILE)
 gal_wl = np.zeros(SIZE_GAL_FILE)
 
@@ -239,9 +239,9 @@ def Comp(file_name):
         cumu += factor
         #print(str(B.get_number(file_name)))
         #print( "MASS: ",prop[str(B.get_number(file_name))][0])
-        cumu_mass += factor * prop[galaxy_numbers[k]][0]
+        cumu_mass += factor * prop[str(int(galaxy_numbers[k]))][0]
         #print( "MET: ",prop[str(B.get_number(file_name))][1])
-        cumu_met += factor * prop[galaxy_numbers[k]][1]
+        cumu_met += factor * prop[str(int(galaxy_numbers[k]))][1]
 
     return (cumu_mass/cumu, cumu_met/cumu)
 
