@@ -51,7 +51,6 @@ global_results = np.zeros( ( 3, len(input_file_names) ))
 ##################################################################
 def loadProperties():
 
-    print("Loading Properties")
     
     prop_file = open(prop_file_name, "r")
 
@@ -207,7 +206,6 @@ def Comp(file_name):
     inp_err = []
     inp_wl = []
     red = -1
-    print("Loading data")
     for line in input_file:
         values = line.split(' ')
         if red == -1:
@@ -239,7 +237,6 @@ def Comp(file_name):
     # Star comparison
     #=====================================
     
-    print("Creating base")
     base_interpol = Create_Base(inp_wl)
 
     cumu_mass = 0
@@ -316,6 +313,12 @@ for i in range(len(input_file_names)):
             local_results[0][i] = numb
             local_results[1][i] = res[0]
             local_results[2][i] = res[1]
+
+	    print(" ")
+	    print(" ")
+	    print(local_results[:][i])
+            print(" ")
+            print(" ")
 
 comm.Barrier()
 comm.Allreduce(local_results, global_results, op=MPI.SUM)
