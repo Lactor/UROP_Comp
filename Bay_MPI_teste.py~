@@ -52,44 +52,18 @@ global_results = np.zeros( ( 3, len(input_file_names) ))
 def loadProperties():
 
     
-   prop_file = open(prop_file_name, "r")
-    
-   tot_prop = np.zeros( (3, SIZE_PROP_FILE))
+    prop_file = open(prop_file_name, "r")
 
-   for index,line in enumerate(prop_file):
-      values = line.split(' ')
-      tot_prop[0][index] = float(values[0])
-      tot_prop[1][index] = float(values[1])
-      tot_prop[2][index] = float(values[2])
-        
-   prop_file.close()
+    for index,line in enumerate(prop_file):		### HACK.  Needs to be fixed.
+        values = line.split(' ')
+        local_prop[0][index] = float(values[0])
+        local_prop[1][index] = float(values[1])
+        local_prop[2][index] = float(values[2])
+	if index == (nGal - 1):
+	    break
 
-   for index, gal in enumerate(galaxy_numbers):
-      gal = int(gal)
-      minin = 0
-      maxin = SIZE_PROP_FILE
-      
-      while minin +1 < maxin:
-         d = int((minin + maxin)/2)
-         if tot_prop[0][d] == gal:
-            minin = d
-            maxin = d+1
-
-         elif tot_prop[0][d] < gal:
-            minin = d
-
-         elif tot_prop[0][d] > gal:
-            maxin = d
-      
-      if tot_prop[0][minin] != gal:
-         print("ERROR the properties for galaxy ", gal, " was not found")
-         sys.exit()
-         
-      local_prop[0][index] = gal
-      local_prop[1][index] = tot_prop[1][minin]
-      local_prop[2][index] = tot_prop[2][minin]
-
-    
+    prop_file.close()
+    print(prop)
 
 ###################################################################
 #
@@ -105,10 +79,10 @@ def LoadSimFile( data_file, gal_num):
     temp_var = np.zeros(SIZE_GAL_FILE)
 
     for index, line in enumerate(gal_file):
-       values = line.split(' ')
-       if local_gal_wl[-1] == 0:
-          local_gal_wl[index] = float(values[0])
-       temp_var[index] = float(values[FILE_SECOND_COLUMN])
+        values = line.split(' ')
+        if local_gal_wl[-1] == 0:
+            local_gal_wl[index] = float(values[0])
+        temp_var[index] = float(values[1])
     localgalaxy_numbers[gal_num] = int(B.get_number(data_file))
     gal_file.close()
 
@@ -308,6 +282,8 @@ this_task = rank
 
 data_files = glob.glob(data_folder+"/"+ "*.txt")
 
+if this_task ==0:
+    loadProperties()
 
 for gal_num, data_file in enumerate(data_files):
     if (gal_num % n_tasks) == rank:
@@ -317,11 +293,6 @@ comm.Barrier()
 comm.Allreduce(localgalaxy_numbers, galaxy_numbers, op=MPI.SUM)
 comm.Allreduce(localgalaxy_file_data, galaxy_file_data, op=MPI.SUM)
 comm.Allreduce(local_gal_wl, gal_wl, op=MPI.SUM)
-
-if this_task ==0:
-    loadProperties()
-
-comm.Barrier()
 comm.Allreduce(local_prop, global_prop, op=MPI.SUM)
 
 for i in np.arange(nGal):	#range(len(global_prop)):
@@ -342,6 +313,12 @@ for i in range(len(input_file_names)):
             local_results[0][i] = numb
             local_results[1][i] = res[0]
             local_results[2][i] = res[1]
+
+	    print(" ")
+	    print(" ")
+	    print(local_results[:][i])
+            print(" ")
+            print(" ")
 
 comm.Barrier()
 comm.Allreduce(local_results, global_results, op=MPI.SUM)

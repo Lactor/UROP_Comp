@@ -6,17 +6,22 @@ import numpy as np
 import matplotlib.pyplot as plt
 import cosmocalc
 import Base as B
-from mpi4py import MPI
 
 
 SIZE_GAL_FILE = 240
 FILE_SECOND_COLUMN = 4 #Position of the value when the line is split
+SIZE_PROP_FILE = 185617
 speed_of_light = 3e8
 dist_base_2 = (3.086e17)**2
 
+
 if len(sys.argv) == 2 and (sys.argv[1] == "--help" or sys.argv[1] == "-h"):
-   print(" MPI IMPLEMENTATION OF Baysean interference for the galaxy fittin")
-   sys.exit()
+    print("\n\
+    Script that runs the comparison between the input files and the simulation files.\n\
+    The results are stored in an individual file for each inputed galaxy on the result_folder\n\
+    \n\
+    python3 Bay_MPI_teste.py data_folder properties_file result_folder inp_file1 inp_file2 ...\n\n")
+    sys.exit()
 
 
 data_folder = sys.argv[1]
@@ -43,6 +48,7 @@ global_prop = np.zeros( (3, nGal) )
 prop = {}
 
 local_results = np.zeros( (3, len(input_file_names) ) )
+print(local_results[2][4])
 global_results = np.zeros( ( 3, len(input_file_names) ))
 ##################################################################
 #
@@ -248,11 +254,11 @@ def Comp(file_name):
                     inp_err.append(err)
                 else:
                     if rank==0:
-			print("Error Quantities less than zero, data ignored" + file_name)
+                       print("Error Quantities less than zero, data ignored" + file_name)
             else:
-		if rank==0:
-                    print("Error Not enough values " + file_name)
-                return -1
+               if rank==0:
+                  print("Error Not enough values " + file_name)
+                  return -1
     input_file.close()
     inp_wl = np.array(inp_wl)
     inp_dat = np.array(inp_dat)
@@ -299,11 +305,11 @@ def Comp(file_name):
 #
 ###################################################################
 
-comm = MPI.COMM_WORLD
-rank = comm.Get_rank()
-size = comm.Get_size()
-n_tasks = size
-this_task = rank
+#comm = MPI.COMM_WORLD
+rank = 0#comm.Get_rank()
+#size = comm.Get_size()
+n_tasks = 1  #size
+this_task = 0 #rank
 
 
 data_files = glob.glob(data_folder+"/"+ "*.txt")
@@ -313,16 +319,18 @@ for gal_num, data_file in enumerate(data_files):
     if (gal_num % n_tasks) == rank:
         LoadSimFile( data_file, gal_num)
 
-comm.Barrier()
-comm.Allreduce(localgalaxy_numbers, galaxy_numbers, op=MPI.SUM)
-comm.Allreduce(localgalaxy_file_data, galaxy_file_data, op=MPI.SUM)
-comm.Allreduce(local_gal_wl, gal_wl, op=MPI.SUM)
+#comm.Barrier()
+galaxy_numbers = localgalaxy_numbers #comm.Allreduce(localgalaxy_numbers, galaxy_numbers, op=MPI.SUM)
+galaxy_file_data = localgalaxy_file_data #comm.Allreduce(localgalaxy_file_data, galaxy_file_data, op=MPI.SUM)
+gal_wl = local_gal_wl#comm.Allreduce(local_gal_wl, gal_wl, op=MPI.SUM)
 
 if this_task ==0:
     loadProperties()
 
-comm.Barrier()
-comm.Allreduce(local_prop, global_prop, op=MPI.SUM)
+#comm.Barrier()
+global_prop = local_prop#comm.Allreduce(local_prop, global_prop, op=MPI.SUM)
+
+
 
 for i in np.arange(nGal):	#range(len(global_prop)):
 #    print i
@@ -334,7 +342,6 @@ print("BEGIN COMPARISON")
 for i in range(len(input_file_names)):
     if (i%n_tasks) == rank:
         res = Comp(input_file_names[i])
-        
         if res == -1: ## Error in running
             continue
         else:
@@ -342,13 +349,13 @@ for i in range(len(input_file_names)):
             local_results[0][i] = numb
             local_results[1][i] = res[0]
             local_results[2][i] = res[1]
+            
 
-comm.Barrier()
-comm.Allreduce(local_results, global_results, op=MPI.SUM)
-
+#comm.Barrier()
+global_results = local_results #comm.Allreduce(local_results, global_results, op=MPI.SUM)
 if rank == 0:
     result = open(result_folder + "results.out", "w")
     for i in np.arange(len(global_results[0])):
-        result.write(str(global_results[0][i]) + " " + str(global_results[1][i]) + " " + str(global_results[2][i]) + "\n")
+        result.write(str(int(global_results[0][i])) + " " + str(global_results[1][i]) + " " + str(global_results[2][i]) + "\n")
 
     print("SUCCESS")
