@@ -6,7 +6,7 @@ if len(sys.argv) == 2 and (sys.argv[1] == "--help" or sys.argv[1] == "-h"):
     print("\n\
     Removes galaxies with mass -inf from the properties file.\
     \n\
-    python3 properties_file\n\n")
+    python3 Trim_prop_file.py properties_file\n\n")
     sys.exit()
 
 

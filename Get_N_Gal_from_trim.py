@@ -7,7 +7,7 @@ if len(sys.argv) == 2 and (sys.argv[1] == "--help" or sys.argv[1] == "-h"):
     print("\n\
     Fetches the files of the first N galaxies from the trimmed properties files, generates the properties file and saves everything onto the target_folder\n\
     \n\
-    python3 data_folder N trimmed_file target_folder target_properties_folder\n\n")
+    python3 Get_N_Gal_from_trim.py data_folder N trimmed_file target_folder target_properties_folder\n\n")
     sys.exit()
 
 if len(sys.argv) != 6:
@@ -31,12 +31,9 @@ galaxy_id = []
 #
 ###
 
-number = 0
 prop_file = open(trimmed_file_name, "r")
 prop = {'id': [], 'logst': [], 'met': []}
 for line in prop_file:
-    if(number >= N):
-        break
     pre_val = line.split(" ")
     values = []
     

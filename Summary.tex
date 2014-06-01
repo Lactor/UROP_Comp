@@ -352,7 +352,6 @@ Then the properties file is opened and their are stored in a dictionary with 1 e
 The rest of the data processing to the galaxies is the same as the best fit files.
 
 
-
 \newpage
 
 
@@ -362,6 +361,38 @@ The rest of the data processing to the galaxies is the same as the best fit file
 
 \section{GAMA\_Scraper.py}
 
+This script downloads the fit files from the galaxys from a GAMA query file. It downloads both the .fit file as well as obtaining the properties of the galaxies, which are then all saved into a single file.
+
+\subsection{Input}
+
+The input of this script is the output file from a query to the GAMA survey database.
+
+\begin{verbatim}
+python3 GAMA_Scraper.py input_file output_file
+\end{verbatim}
+
+\subsection{Inner workings}
+
+The script works by assuming all of the webpages of the galaxies are of the form:
+
+\begin{verbatim}
+http://www.gama-survey.org/dr2/tools/sov.php?cataid=(#id)
+\end{verbatim}
+
+Where the parenteses part corresponds to the unique ID for each galacy. By accessing the html file from this we can obtain the download link for the .fit file.\\
+
+This is done by finding the bit of html code before the download link and then from that get the download link aftwards. Then the script downloads the file to results\_folder.\\
+
+To obtain the properties of the galaxy, the script access a different page which contains all the properties of interest of the galaxy. From there, since the information is coded on the html file, we can look for the name of the property and from there obtain the value itself.\\
+
+The url for this page is:
+
+\begin{verbatim}
+http://www.gama-survey.org/dr2/tools/querytab.php?tab=StellarMasses&cataid=(#id)
+\end{verbatim}
+
+This is done for every property we are interested and saves them all into a file with the galaxy id, followed by the various properties.
+
 \newpage
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -369,6 +400,24 @@ The rest of the data processing to the galaxies is the same as the best fit file
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Trim\_prop\_file.py}
+
+This files removes all of the galaxies in the properties file with invalid properties, hence galaxies that are of no interest to us, saving the ones of interest to a new file.
+
+\subsection{Input}
+
+The input for this script is a file with the properties from the Illustris simulation.
+
+\begin{verbatim}
+python3 Trim_prop_file.py properties_file.py
+\end{verbatim}
+
+\subsection{ Inner Workings}
+
+This is a simple script, it simples goes through each line of the file and check if any of the properties is invalid (either 0.0 or -inf).\\
+
+If it is valid is adds to an array, if not, that value is disregarded. The entries on the array are then printed to a file with the name ``trim\_aux\_properties.txt'' on the same directory as the original file.\\
+
+A possible improvement would be to include the result file as a parameter.
 
 \newpage
 
@@ -379,10 +428,76 @@ The rest of the data processing to the galaxies is the same as the best fit file
 
 \section{Get\_N\_Gal\_from\_trim.py}
 
+From the trimmed properties file, it gets obtains information from $N$ valid galaxies and copies their information into a folder. Not only is the a new properties file created but also the galaxy files are copied.
+
+\subsection{Input}
+
+The script accepts the folder with the Illustris galaxy data, the number of galaxies we want ($N$), the trimmed properties file, and a target folder for the galaxy and the properties file.
+
+\begin{verbatim}
+python3 Get_N_Gal_from_trim.py data_folder N trimmed_file target_folder target_properties_folder
+\end{verbatim}
+
+\subsection{Inner Workings}
+
+Firstly the file reads the trimmed properties file, saving the galaxies properties into arrays within a dictionary.\\
+
+Then the id array is transversed and the first N available galaxies have their galaxy file copied into the new directory and their properties written to the new file.
+
 
 \newpage
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Bay\_MPI.py}
+
+Implementation of the baysean comparison using the MPI protocol for multi threaded running. The theoretical part is the same as the Comp\_Bay.py file, however the implementation is different. In this file, the transformation from raw Illustris galaxy files to formatted ones is implemented.\\
+
+\subsection{Input}
+
+The input of this file is very similar to the Comp\_Bay.py file however instead of the formatted galaxy folder, it expects the raw data folder. Moreover it expects, not a properties file containing only the properties from the galaxies we are comparing, but the entire trimmed file. Notice, also, that we need to include the MPI initialization code.
+
+The file run.sh contains the correct argument to run the code with a certain amount of threads.
+
+\subsection{Descriptions of each function}
+
+The code is seperated into the functions to make the code more modular for the paralelization.
 
 
+\subsubsection{LoadSimFile}
+
+This function loads the galaxy file given a galaxy file name (data\_file) and a number (gal\_num) which will correspond to the position of the galaxy's information in the array.\\
+
+It opens the file, reads the information and transforms it using the same calculations from the Format\_galaxies.py file. The information is then store it in the array at the position gal\_num.
+
+\subsubsection{loadProperties}
+
+This function is responsible for opening, reading and storing the properties of the Illustris galaxies. Then, based on the galaxies that have been read, it constructs a properties array containing only the information from the Illustris galaxies used.
+
+\subsubsection{Comp}
+
+The function that does the comparison of a given galaxy (file\_name) against the galaxy files loaded.\\
+
+The function opens the galaxy file that was given as an argument and loads the data from there, ensuring that all the information is valid.\\
+
+Then the fluxes and the errors are transformed using the Transform function which performs the same transformation of the data as in the other comparison scripts.\\
+
+Then the function creates a interpolation base. This corresponds to precomputing the values which will be involved in the interpolation of the data, meaning that, since all of the Illustris galaxies have the same wavelengths, we can pre-calculate between which values of the Illustris wavelengths do the wavelengths of the input galaxy are.\\
+
+Then we can use this base, in the Calculate\_Inter, to calculate the interpolation of a Illustris galaxy on the values of the wavelengths of the input galaxy.\\
+
+Then the $\chi^2$ is calculated, using the interpolation, the input galaxy information and its error. From there a baysean weight is calculated and used to calculate the best estimation for the properties of the input galaxy.
+
+\subsubsection{MPI}
+
+The paralelized implemention of the code goes as follows. First, the MPI communication is set between all of the threads. Then the loading of the Illustris galaxy informations is divided between the various threads.\\
+
+After that all of the information is shared between the threads, and a single thread is chosen to load the properties of those galaxies and share them with every galaxy.\\
+
+From there, the galaxies are divided among the threads, and each thread calculates the properties for the galaxies that have been assigned to it.\\
+
+Once that task is complete, all of the information is joined and then a single task is responsible to write the information onto a file. 
 \end{document}

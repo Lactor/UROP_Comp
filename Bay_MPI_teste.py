@@ -9,6 +9,7 @@ import Base as B
 
 
 SIZE_GAL_FILE = 240
+SIZE_PROP_FILE = 185687
 FILE_SECOND_COLUMN = 4 #Position of the value when the line is split
 SIZE_PROP_FILE = 185617
 speed_of_light = 3e8
